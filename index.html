@@ -31,95 +31,124 @@
 
  
 
-   function addProduct(event){
-    event.preventDefault();
-        const selling_price = event.target.selling_price.value;
-        const product_name = event.target.product_name.value;
-        const category = event.target.category.value; 
+   async function addProduct(event){
+    try{
+            event.preventDefault();
+            const selling_price = event.target.selling_price.value;
+            const product_name = event.target.product_name.value;
+            const category = event.target.category.value; 
 
-        const obj = {
-            product_name,
-            category,
-            selling_price
-        }
+            const obj = {
+                product_name,
+                category,
+                selling_price
+            }
 
+        
+            response = await axios.post('https://crudcrud.com/api/261c811bb9754600a23a645da75161c3/products',obj);
+
+            if(response.status === 201){
+                console.log("Data inserted");
+                showProductonScreen(response.data);
+
+            }else{
+                console.log("Data not inserted");
+            }
+                    
+            
+        }              
+    catch(error){
+        console.log(error);
+    }
     
-    axios.post('https://crudcrud.com/api/cfd5584e79de4cb8a9c94cd2c61a560f/products',obj)
-                .then((response)=>{
-                    showProductonScreen(response.data);
-                   // console.log(response.data);
-                }).
-                catch((err)=>{
-                    console.log(err);
-                });
     }
 
     
 
 
 
-    function showProductonScreen(object){
-        console.log(object);
-        const id = object._id;
-        const selling_price = object.selling_price;
-        const product_name = object.product_name;
-        const category = object.category;
+    async function showProductonScreen(object){
+        try{
+            console.log(object);
+            const id = object._id;
+            const selling_price = object.selling_price;
+            const product_name = object.product_name;
+            const category = object.category;
 
-        if (category === "electronics"){
-            const parentElem = document.getElementById("li_electronics");
-            const childElem = `<li id=${id}>${product_name}-${selling_price}-${category}<button onclick=deleteUser('${id}')>Delete</button>`;
+            if (category === "electronics"){
+                const parentElem = document.getElementById("li_electronics");
+                const childElem = `<li id=${id}>${product_name}-${selling_price}-${category}<button onclick=deleteUser('${id}')>Delete</button>`;
 
-            parentElem.innerHTML = parentElem.innerHTML + childElem;
+                parentElem.innerHTML = parentElem.innerHTML + childElem;
+            }
+            else if(category === "food"){
+                const parentElem = document.getElementById("li_food");
+                const childElem = `<li id=${id}>${product_name}-${selling_price}-${category}<button onclick=deleteUser('${id}')>Delete</button>`;
+
+                parentElem.innerHTML = parentElem.innerHTML + childElem;
+
+            }
+            else{
+                const parentElem = document.getElementById("li_skincare");
+                const childElem = `<li id=${id}>${product_name}-${selling_price}-${category}<button onclick=deleteUser('${id}','${category}')>Delete</button>`;
+
+                parentElem.innerHTML = parentElem.innerHTML + childElem;
+            }
         }
-        else if(category === "food"){
-            const parentElem = document.getElementById("li_food");
-            const childElem = `<li id=${id}>${product_name}-${selling_price}-${category}<button onclick=deleteUser('${id}')>Delete</button>`;
-
-            parentElem.innerHTML = parentElem.innerHTML + childElem;
-
+        catch(error){
+            console.log(error);
         }
-        else{
-            const parentElem = document.getElementById("li_skincare");
-            const childElem = `<li id=${id}>${product_name}-${selling_price}-${category}<button onclick=deleteUser('${id}','${category}')>Delete</button>`;
-
-            parentElem.innerHTML = parentElem.innerHTML + childElem;
-        }
+        
     }
 
 
-     window.addEventListener('DOMContentLoaded',()=>{
-        axios
-        .get('https://crudcrud.com/api/cfd5584e79de4cb8a9c94cd2c61a560f/products')
-        .then((response)=>{
+     window.addEventListener('DOMContentLoaded',async()=>{
+        try{
+            response = await axios.get('https://crudcrud.com/api/261c811bb9754600a23a645da75161c3/products');
             data = response.data;
             data.forEach((element)=>{
                 showProductonScreen(element);
             });
-            
-            //console.log(response.data);
-        })
-        .catch((err)=>console.log(error));
+        }catch(error){
+            console.log(error)
+        }
 
     });
 
 
-    function deleteUser(productId,category){
-        axios
-        .delete(`https://crudcrud.com/api/cfd5584e79de4cb8a9c94cd2c61a560f/products/${productId}`)
-        .then((response)=>{
-            console.log(response);
-            deleteFromScreen(productId);
-        })
-        .catch((err)=>{
-            console.log(err);
-        });
+    async function deleteUser(productId,category){
+        try{
+            //console.log(productId);
+            deleteData = await axios
+            .delete(`https://crudcrud.com/api/261c811bb9754600a23a645da75161c3/products/${productId}`);
+
+            if(deleteData.status === 200){
+                console.log(deleteData.status);
+                deleteFromScreen(productId);
+            }else{
+                console.log("Not Deleted");
+            }
+            
+            
+           
+        }
+        catch(error){
+            console.log(error);
+        }
+        
     }
 
     function deleteFromScreen(productId){
-        const childElem = document.getElementById(productId);
-        const parentElem = childElem.parentElement;
-        //console.log(parentElem);
-        parentElem.removeChild(childElem);
+        try{
+            const childElem = document.getElementById(productId);
+            const parentElem = childElem.parentElement;
+            //console.log(parentElem);
+            parentElem.removeChild(childElem);
+        }
+        catch(error){
+            console.log(error);
+        }
+        
     }
 
     
